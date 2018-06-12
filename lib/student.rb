@@ -24,8 +24,8 @@ class Student
       FROM students;
     SQL
     
-    students = DB[:conn].execute(sql)
-    students.map { |row| self.new_from_db(row) }
+    students_data = DB[:conn].execute(sql)
+    students_data.map { |row| self.new_from_db(row) }
   end
   
   # find the student in the database given a name 
@@ -34,7 +34,8 @@ class Student
     sql = <<-SQL
       SELECT * 
       FROM students
-      WHERE name = ?;
+      WHERE name = ?
+      LIMIT 1;
     SQL
     
     database_entry = DB[:conn].execute(sql, name).first
@@ -70,12 +71,13 @@ class Student
 
   def self.drop_table
     sql = "DROP TABLE IF EXISTS students;"
+    
     DB[:conn].execute(sql)
   end
   
   def self.count_all_students_in_grade_9
     sql = <<-SQL
-      SELECT * 
+      SELECT COUNT(*) 
       FROM students 
       WHERE grade = 9;
     SQL
@@ -92,12 +94,11 @@ class Student
       WHERE grade < 12;
     SQL
     
-    DB[:conn].execute(sql).map do |row|
-      self.new_from_db(row)
-    end
+    students_data = DB[:conn].execute(sql)
+    students_data.map { |row| self.new_from_db(row) }
   end
   
-  def self.first_X_students_in_grade_10(x)
+  def self.first_X_students_in_grade_10(number)
     sql = <<-SQL
       SELECT *
       FROM students
@@ -105,9 +106,8 @@ class Student
       LIMIT ?;
     SQL
     
-    DB[:conn].execute(sql, x).map do |row|
-      self.new_from_db(row)
-    end
+    students_data = DB[:conn].execute(sql, number)
+    students_data.map { |row| self.new_from_db(row) }
   end
   
   def self.first_student_in_grade_10
@@ -115,23 +115,22 @@ class Student
       SELECT *
       FROM students
       WHERE grade = 10
+      ORDER BY id
       LIMIT 1;
     SQL
     
-    DB[:conn].execute(sql).map do |row|
-      self.new_from_db(row)
-    end.first
+    student_data = DB[:conn].execute(sql)
+    student_data.map { |row| self.new_from_db(row) }.first
   end
   
-  def self.all_students_in_grade_X(x)
+  def self.all_students_in_grade_X(grade)
     sql = <<-SQL
       SELECT *
       FROM students
       WHERE grade = ?;
     SQL
     
-    DB[:conn].execute(sql, x).map do |row|
-      self.new_from_db(row)
-    end
+    students_data = DB[:conn].execute(sql, grade)
+    students_data.map { |row| self.new_from_db(row) }
   end
 end
