@@ -1,7 +1,8 @@
 require 'pry'
 
 class Student
-  attr_accessor :id, :name, :grade
+  attr_accessor :name, :grade
+  attr_reader :id
   
   # create a new Student object given a row from the database
   def self.new_from_db(row)
